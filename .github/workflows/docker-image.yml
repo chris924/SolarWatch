@@ -22,10 +22,10 @@ jobs:
 
       - name: Build Docker Image
         run: |
-          docker build -t your-dockerhub-username/your-repo-name:latest .
+          docker build -t chris924/solarwatch:latest .
         working-directory: SolarWatch
 
       - name: Push Docker Image to DockerHub
         run: |
-          docker push your-dockerhub-username/your-repo-name:latest
+          docker push chris924/solarwatch:latest
         working-directory: SolarWatch
