@@ -7,6 +7,7 @@ using Moq.Language.Flow;
 using SolarWatch;
 using SolarWatch.Controllers;
 using ILogger = Castle.Core.Logging.ILogger;
+using NUnit.Framework;
 
 namespace TestProject1;
 
