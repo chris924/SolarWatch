@@ -8,6 +8,7 @@ using SolarWatch;
 using SolarWatch.Controllers;
 using ILogger = Castle.Core.Logging.ILogger;
 using NUnit.Framework;
+using SolarWatch.Repository;
 
 namespace TestProject1;
 
@@ -21,6 +22,7 @@ public class Tests
         private Mock<ISunriseSunsetAPI> _sunriseSunsetApiMock;
         private Mock<IJsonProcessor> _jsonProcessorMock;
         private Mock<IGeoLocatingAPI> _geoLocatingApiMock;
+        private Mock<ISolarRepository> _solarRepositoryMock;
         private ILogger<JsonProcessor> _logger1;
         private ILogger<GeoLocatingAPI> _logger2;
         private ILogger<SunriseSunsetAPI> _logger3;
@@ -38,11 +40,12 @@ public class Tests
             _sunriseSunsetApiMock = new Mock<ISunriseSunsetAPI>();
             _jsonProcessorMock = new Mock<IJsonProcessor>();
             _geoLocatingApiMock = new Mock<IGeoLocatingAPI>();
+            _solarRepositoryMock = new Mock<ISolarRepository>();
             _logger1 = new Logger<JsonProcessor>(new LoggerFactory());
             _logger2 = new Logger<GeoLocatingAPI>(new LoggerFactory());
             _logger3 = new Logger<SunriseSunsetAPI>(new LoggerFactory());
             _controller = new SunriseSunsetController(_loggerMock.Object, _sunriseSunsetApiMock.Object,
-                _jsonProcessorMock.Object, _geoLocatingApiMock.Object);
+                _jsonProcessorMock.Object, _geoLocatingApiMock.Object, _solarRepositoryMock.Object);
             _jsonProcessor = new JsonProcessor(_logger1);
             _geoLocatingApi = new GeoLocatingAPI(_logger2);
             _sunriseSunsetApi = new SunriseSunsetAPI(_logger3);

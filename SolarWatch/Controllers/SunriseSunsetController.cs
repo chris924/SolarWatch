@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using SolarWatch.Model;
+using SolarWatch.Repository;
 
 namespace SolarWatch.Controllers;
 
@@ -11,20 +13,33 @@ public class SunriseSunsetController : ControllerBase
     private readonly ISunriseSunsetAPI _sunriseSunsetApi;
     private readonly IJsonProcessor _jsonProcessor;
     private readonly IGeoLocatingAPI _geoLocatingApi;
-    
+    private readonly ISolarRepository _solarRepository;
     
 
-    public SunriseSunsetController(ILogger<SunriseSunsetController> logger, ISunriseSunsetAPI sunriseSunsetApi, IJsonProcessor jsonProcessor, IGeoLocatingAPI geoLocatingApi)
+    public SunriseSunsetController(ILogger<SunriseSunsetController> logger, ISunriseSunsetAPI sunriseSunsetApi, IJsonProcessor jsonProcessor, IGeoLocatingAPI geoLocatingApi, ISolarRepository solarRepository)
     {
         _logger = logger;
         _sunriseSunsetApi = sunriseSunsetApi;
         _jsonProcessor = jsonProcessor;
         _geoLocatingApi = geoLocatingApi;
+        _solarRepository = solarRepository;
     }
 
     [HttpGet("getsunrisesunset")]
     public async Task<ActionResult<SunriseSunsetModel>> Get(string city)
     {
+
+        var foundCityInDb = _solarRepository.GetByName(city);
+
+        if (foundCityInDb != null)
+        {
+            SunriseSunsetModel newRiseSetModel = new SunriseSunsetModel(){City = foundCityInDb.Name, Sunrise = foundCityInDb.SetRise.Sunrise, Sunset = foundCityInDb.SetRise.Sunset};
+      
+            return Ok(newRiseSetModel);
+        }
+
+        
+        
         try
         {
             
@@ -33,8 +48,31 @@ public class SunriseSunsetController : ControllerBase
             
             var riseSetData = GetSunriseSunsetData(model.Lat, model.Lon);
 
+            var result = _jsonProcessor.ProcessSunriseSunsetJson(await riseSetData, model.City);
+
+            SetRiseTime newSetRiseTime = new SetRiseTime
+            {
+                Sunrise = result.Sunrise,
+                Sunset = result.Sunset
+            };
+
+
+            City newCity = new City
+            {
+                Name = model.City,
+                Latitude = model.Lat,
+                Longitude = model.Lon,
+                Country = model.Country,
+                State = model.State,
+                SetRise = newSetRiseTime 
+            };
+
+
+            newSetRiseTime.CityData = newCity;
             
-            return Ok(_jsonProcessor.ProcessSunriseSunsetJson(await riseSetData, model.City));
+            _solarRepository.Add(newCity);
+            
+            return Ok(result);
         }
         catch (System.Net.WebException ex)
         {

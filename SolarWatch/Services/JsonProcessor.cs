@@ -44,6 +44,8 @@ public class JsonProcessor : IJsonProcessor
         JsonElement firstItem = jsonArray.EnumerateArray().FirstOrDefault();
 
         string name = firstItem.GetProperty("name").GetString();
+        string country = firstItem.GetProperty("country").GetString();
+        string state = firstItem.GetProperty("state").GetString();
         double lat = firstItem.GetProperty("lat").GetDouble();
         double lon = firstItem.GetProperty("lon").GetDouble();
             
@@ -51,6 +53,8 @@ public class JsonProcessor : IJsonProcessor
             LatLonModel latLonModel = new LatLonModel
             {
                 City = name,
+                State = state,
+                Country = country,
                 Lat = lat,
                 Lon = lon
             };

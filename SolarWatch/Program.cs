@@ -1,4 +1,6 @@
 using SolarWatch;
+using SolarWatch.Repository;
+using SolarWatch.Services.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +13,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<IJsonProcessor, JsonProcessor>();
 builder.Services.AddSingleton<ISunriseSunsetAPI, SunriseSunsetAPI>();
 builder.Services.AddSingleton<IGeoLocatingAPI, GeoLocatingAPI>();
+builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
 
 var app = builder.Build();
 

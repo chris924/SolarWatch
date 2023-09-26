@@ -24,7 +24,7 @@ public class SolarWatchApiContext : DbContext
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        // Define a one-to-one relationship between City and SunriseSunset
+        
         modelBuilder.Entity<City>()
             .HasOne(city => city.SetRise)
             .WithOne(SetRise => SetRise.CityData)
