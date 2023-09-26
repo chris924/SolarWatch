@@ -3,3 +3,8 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+/SolarWatch/Properties/appsettings.json
+SolarWatch.sln.DotSettings.user
+.idea
+.vs
+SolarWatch/.idea
