@@ -29,7 +29,7 @@ public class SunriseSunsetController : ControllerBase
     public async Task<ActionResult<SunriseSunsetModel>> Get(string city)
     {
 
-        var foundCityInDb = _solarRepository.GetByName(city);
+        var foundCityInDb =  await CheckDbForCity(city);
 
         if (foundCityInDb != null)
         {
@@ -97,4 +97,11 @@ public class SunriseSunsetController : ControllerBase
     {
         return await _sunriseSunsetApi.GetCurrent(lat, lon);
     }
+
+    public async Task<City?> CheckDbForCity(string name)
+    {
+        return _solarRepository.GetByName(name);
+    }
+   
+    
 }

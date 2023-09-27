@@ -1,6 +1,8 @@
 using System.Net;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Language.Flow;
@@ -8,7 +10,9 @@ using SolarWatch;
 using SolarWatch.Controllers;
 using ILogger = Castle.Core.Logging.ILogger;
 using NUnit.Framework;
+using SolarWatch.Model;
 using SolarWatch.Repository;
+using SolarWatch.Services.Repository;
 
 namespace TestProject1;
 
@@ -22,7 +26,9 @@ public class Tests
         private Mock<ISunriseSunsetAPI> _sunriseSunsetApiMock;
         private Mock<IJsonProcessor> _jsonProcessorMock;
         private Mock<IGeoLocatingAPI> _geoLocatingApiMock;
+        private Mock<IConfiguration> _configMock;
         private Mock<ISolarRepository> _solarRepositoryMock;
+        private Mock<DbContext> _solarWatchApiContextMock;
         private ILogger<JsonProcessor> _logger1;
         private ILogger<GeoLocatingAPI> _logger2;
         private ILogger<SunriseSunsetAPI> _logger3;
@@ -40,7 +46,9 @@ public class Tests
             _sunriseSunsetApiMock = new Mock<ISunriseSunsetAPI>();
             _jsonProcessorMock = new Mock<IJsonProcessor>();
             _geoLocatingApiMock = new Mock<IGeoLocatingAPI>();
+            _configMock = new Mock<IConfiguration>();
             _solarRepositoryMock = new Mock<ISolarRepository>();
+            _solarWatchApiContextMock = new Mock<DbContext>();
             _logger1 = new Logger<JsonProcessor>(new LoggerFactory());
             _logger2 = new Logger<GeoLocatingAPI>(new LoggerFactory());
             _logger3 = new Logger<SunriseSunsetAPI>(new LoggerFactory());
@@ -117,7 +125,21 @@ public class Tests
             Assert.That(result, Is.InstanceOf(expectedType.GetType()));
         }
 
-       
+        [Test]
+        public void SolarRepositoryReturnsNullIfCityIsNotInDb()
+        {
+            
+            var cityName = "SampleCity";
+            City? expectedResult = null;
+
+            _solarRepositoryMock.Setup(x => x.GetByName(It.IsAny<string>())).Returns(() => expectedResult);
+
+
+            var result = _controller.CheckDbForCity(cityName);
+            
+            
+            Assert.That(expectedResult, Is.EqualTo(result.Result));
+        }
 
         
     }
