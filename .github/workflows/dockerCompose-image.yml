@@ -24,5 +24,5 @@ jobs:
         env:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
         run: |
-          docker-compose -f SolarWatch/SolarWatch/docker-compose.yml up -d 
+          docker-compose -f SolarWatch/docker-compose.yml up -d 
           working-directory: SolarWatch
