@@ -1,4 +1,5 @@
 using System.Net;
+using System.Reflection;
 using Castle.Core.Logging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -61,19 +62,23 @@ public class Tests
         }
         
         [Test]
-        public async Task GetCurrentReturnsNotFoundIfCityNameIsInvalid()
+        public async Task GetCurrent_ReturnsNotFound_IfCityNameIsInvalid()
         {
-            var cityName = ",";
-
-            var result =  await _controller.Get(cityName);
+            var cityName = ","; 
             
-            Assert.IsInstanceOf(typeof(NotFoundObjectResult), result.Result);
+            _geoLocatingApiMock.Setup(api => api.GetLatLon(cityName)).Throws(new Exception("Invalid city"));
+
+            
+            var result = await _controller.Get(cityName);
+            
+            Assert.IsInstanceOf<NotFoundObjectResult>(result.Result);
         }
         
         [Test]
-        public async Task GeoLocationApiGetLatLonTypeIsValidIfDataIsValid()
+        public async Task GeoLocationApi_TypeIsValid_IfDataIsValid()
         {
             var expectedType = "string";
+            
             _geoLocatingApiMock.Setup(x => x.GetLatLon(It.IsAny<string>())).ReturnsAsync(expectedType);
 
             var result =  await _geoLocatingApi.GetLatLon("London");
@@ -82,9 +87,9 @@ public class Tests
         }
 
         [Test]
-        public async Task JsonCityProcessorIsValidIfDataIsValid()
+        public async Task JsonCityProcessor_IsValid_IfDataIsValid()
         {
-            // Arrange
+            
             var cityName = "London";
             var expectedLatLonModel = new LatLonModel
             {
@@ -113,7 +118,7 @@ public class Tests
         }
 
         [Test]
-        public async Task SunriseSunsetApiGetCurrentTypeIsValidIfDataIsValid()
+        public async Task SunriseSunsetApiGetCurrentType_IsValid_IfDataIsValid()
         {
             var expectedType = "string";
 
@@ -126,16 +131,15 @@ public class Tests
         }
 
         [Test]
-        public void SolarRepositoryReturnsNullIfCityIsNotInDb()
+        public void SolarRepository_ReturnsNull_IfCityIsNotInDb()
         {
             
-            var cityName = "SampleCity";
             City? expectedResult = null;
 
-            _solarRepositoryMock.Setup(x => x.GetByName(It.IsAny<string>())).Returns(() => expectedResult);
-
-
-            var result = _controller.CheckDbForCity(cityName);
+            MethodInfo methodInfo = typeof(SunriseSunsetController).GetMethod("CheckDbForCity", BindingFlags.NonPublic | BindingFlags.Instance);
+    
+           
+            var result = methodInfo.Invoke(_controller, new object[] { "SampleCity" }) as Task<City?>;
             
             
             Assert.That(expectedResult, Is.EqualTo(result.Result));

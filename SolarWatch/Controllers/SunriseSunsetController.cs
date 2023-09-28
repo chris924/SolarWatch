@@ -25,54 +25,35 @@ public class SunriseSunsetController : ControllerBase
         _solarRepository = solarRepository;
     }
 
-    [HttpGet("getsunrisesunset")]
+    [HttpGet("get-sunrise-sunset")]
     public async Task<ActionResult<SunriseSunsetModel>> Get(string city)
     {
 
-        var foundCityInDb =  await CheckDbForCity(city);
+        var foundCityInDb =  await CheckDbForCity(city); // Check if City is already in database
 
-        if (foundCityInDb != null)
+        if (foundCityInDb != null) // If City in database, get the details from there
         {
-            SunriseSunsetModel newRiseSetModel = new SunriseSunsetModel(){City = foundCityInDb.Name, Sunrise = foundCityInDb.SetRise.Sunrise, Sunset = foundCityInDb.SetRise.Sunset};
+            SunriseSunsetModel newRiseSetModel = new SunriseSunsetModel(){City = foundCityInDb.Name,
+                Sunrise = foundCityInDb.SetRise.Sunrise, Sunset = foundCityInDb.SetRise.Sunset};
       
             return Ok(newRiseSetModel);
         }
-
         
-        
-        try
+        try 
         {
             
-            LatLonModel model = await GetLatLonForCity(city);
-            
-            
-            var riseSetData = GetSunriseSunsetData(model.Lat, model.Lon);
+            LatLonModel latLonForCity = await GetLatLonForCity(city); // Latitude and Longitude values for city
 
-            var result = _jsonProcessor.ProcessSunriseSunsetJson(await riseSetData, model.City);
-
-            SetRiseTime newSetRiseTime = new SetRiseTime
+            if (latLonForCity == null)
             {
-                Sunrise = result.Sunrise,
-                Sunset = result.Sunset
-            };
-
-
-            City newCity = new City
-            {
-                Name = model.City,
-                Latitude = model.Lat,
-                Longitude = model.Lon,
-                Country = model.Country,
-                State = model.State,
-                SetRise = newSetRiseTime 
-            };
-
-
-            newSetRiseTime.CityData = newCity;
+                return StatusCode(500, "Error getting one or more city data.");
+            }
             
-            _solarRepository.Add(newCity);
+            var riseSetModel = await GetSunriseSunsetData(latLonForCity.Lat, latLonForCity.Lon, latLonForCity.City); // Sunrise, sunet values with city name
+
+           AddCityToDb(latLonForCity, riseSetModel);
             
-            return Ok(result);
+            return Ok(riseSetModel);
         }
         catch (System.Net.WebException ex)
         {
@@ -93,15 +74,41 @@ public class SunriseSunsetController : ControllerBase
         return _jsonProcessor.ProcessCityJson(cityData);
     }
 
-    private async Task<string> GetSunriseSunsetData(double lat, double lon)
+    private async Task<SunriseSunsetModel> GetSunriseSunsetData(double lat, double lon, string city)
     {
-        return await _sunriseSunsetApi.GetCurrent(lat, lon);
+        var riseSetData = await _sunriseSunsetApi.GetCurrent(lat, lon);
+        return _jsonProcessor.ProcessSunriseSunsetJson( riseSetData, city);
     }
 
-    public async Task<City?> CheckDbForCity(string name)
+    internal async Task<City?> CheckDbForCity(string name)
     {
         return _solarRepository.GetByName(name);
     }
-   
+
+
+    private void AddCityToDb(LatLonModel model, SunriseSunsetModel result)
+    {
+        SetRiseTime newSetRiseTime = new SetRiseTime
+        {
+            Sunrise = result.Sunrise,
+            Sunset = result.Sunset
+        };
+
+
+        City newCity = new City
+        {
+            Name = model.City,
+            Latitude = model.Lat,
+            Longitude = model.Lon,
+            Country = model.Country,
+            State = model.State,
+            SetRise = newSetRiseTime 
+        };
+
+
+        newSetRiseTime.CityData = newCity;
+            
+        _solarRepository.Add(newCity);
+    }
     
 }

@@ -43,12 +43,17 @@ public class JsonProcessor : IJsonProcessor
         
         JsonElement firstItem = jsonArray.EnumerateArray().FirstOrDefault();
 
-        string name = firstItem.GetProperty("name").GetString();
-        string country = firstItem.GetProperty("country").GetString();
-        string state = firstItem.GetProperty("state").GetString();
-        double lat = firstItem.GetProperty("lat").GetDouble();
-        double lon = firstItem.GetProperty("lon").GetDouble();
-            
+        if (firstItem.TryGetProperty("name", out var nameProperty) &&
+            firstItem.TryGetProperty("country", out var countryProperty) &&
+            firstItem.TryGetProperty("state", out var stateProperty) &&
+            firstItem.TryGetProperty("lat", out var latProperty) &&
+            firstItem.TryGetProperty("lon", out var lonProperty))
+        {
+            string name = nameProperty.GetString();
+            string country = countryProperty.GetString();
+            string state = stateProperty.GetString();
+            double lat = latProperty.GetDouble();
+            double lon = lonProperty.GetDouble();
 
             LatLonModel latLonModel = new LatLonModel
             {
@@ -59,7 +64,12 @@ public class JsonProcessor : IJsonProcessor
                 Lon = lon
             };
             return latLonModel;
-            
-        
+        }
+        else
+        {
+            _logger.LogError("One or more properties were missing in the JSON data.");
+            return null;
+        }
+
     }
 }
