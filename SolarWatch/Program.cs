@@ -5,8 +5,7 @@ using SolarWatch;
 using SolarWatch.Repository;
 using SolarWatch.Services.Repository;
 using Microsoft.Extensions.Configuration;
-
-
+using SolarWatch.Authentication;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +21,8 @@ builder.Services.AddSingleton<IJsonProcessor, JsonProcessor>();
 builder.Services.AddSingleton<ISunriseSunsetAPI, SunriseSunsetAPI>();
 builder.Services.AddSingleton<IGeoLocatingAPI, GeoLocatingAPI>();
 builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
+builder.Services.AddDbContext<SolarWatchApiContext>();
+builder.Services.AddDbContext<IdentityUsersContext>();
 
 var jwtSettingsConfiguration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
