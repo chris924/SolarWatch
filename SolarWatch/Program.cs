@@ -1,8 +1,16 @@
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using SolarWatch;
 using SolarWatch.Repository;
 using SolarWatch.Services.Repository;
+using Microsoft.Extensions.Configuration;
+
+
+
 
 var builder = WebApplication.CreateBuilder(args);
+IConfiguration configuration = builder.Configuration;
 
 // Add services to the container.
 
@@ -15,6 +23,39 @@ builder.Services.AddSingleton<ISunriseSunsetAPI, SunriseSunsetAPI>();
 builder.Services.AddSingleton<IGeoLocatingAPI, GeoLocatingAPI>();
 builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
 
+var jwtSettingsConfiguration = new ConfigurationBuilder()
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("jwtSettings.json", optional: true)
+    .Build();
+
+var validIssuer = jwtSettingsConfiguration["ValidIssuer"];
+var validAudience = jwtSettingsConfiguration["ValidAudience"];
+var issuerSigningKey = configuration["JwtSettings:IssuerSigningKey"];
+
+
+
+builder.Services
+    .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        if (issuerSigningKey != null)
+            options.TokenValidationParameters = new TokenValidationParameters()
+            {
+                ClockSkew = TimeSpan.Zero,
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                ValidIssuer = validIssuer,
+                ValidAudience = validAudience,
+                IssuerSigningKey = new SymmetricSecurityKey(
+                    Encoding.UTF8.GetBytes(issuerSigningKey)
+                ),
+            };
+    });
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -26,7 +67,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
+
 
 app.MapControllers();
 

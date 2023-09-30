@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Model;
 using SolarWatch.Repository;
@@ -25,7 +26,7 @@ public class SunriseSunsetController : ControllerBase
         _solarRepository = solarRepository;
     }
 
-    [HttpGet("get-sunrise-sunset")]
+    [HttpGet("get-sunrise-sunset"), Authorize]
     public async Task<ActionResult<SunriseSunsetModel>> Get(string city)
     {
 
@@ -49,7 +50,7 @@ public class SunriseSunsetController : ControllerBase
                 return StatusCode(500, "Error getting one or more city data.");
             }
             
-            var riseSetModel = await GetSunriseSunsetData(latLonForCity.Lat, latLonForCity.Lon, latLonForCity.City); // Sunrise, sunet values with city name
+            var riseSetModel = await GetSunriseSunsetData(latLonForCity.Lat, latLonForCity.Lon, latLonForCity.City); // Sunrise, sunset values with city name
 
            AddCityToDb(latLonForCity, riseSetModel);
             
