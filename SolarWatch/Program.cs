@@ -8,6 +8,7 @@ using SolarWatch.Services.Repository;
 using Microsoft.Extensions.Configuration;
 using SolarWatch.Authentication;
 using SolarWatch.Services.Authentication;
+using SolarWatch.Services.Authentication.TokenService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +27,7 @@ builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
 builder.Services.AddDbContext<SolarWatchApiContext>();
 builder.Services.AddDbContext<IdentityUsersContext>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services
     .AddIdentityCore<IdentityUser>(options =>
