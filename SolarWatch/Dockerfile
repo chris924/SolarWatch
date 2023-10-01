@@ -8,4 +8,5 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 as runtime
 WORKDIR /publish
 COPY --from=build-env /publish .
 ENV ASPNETCORE_URLS=http://+:80
-ENTRYPOINT ["dotnet", "SolarWatch.dll"]
+EXPOSE 80
+ENTRYPOINT ["dotnet", "SolarWatch.dll", "--server.urls", "https://+:80"]
