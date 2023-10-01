@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 
 namespace SolarWatch.Services.Authentication.TokenService;
 
@@ -26,7 +27,8 @@ public class TokenService : ITokenService
         var token = CreateJwtToken(
             CreateClaims(user),
             CreateSigningCredentials(),
-            expiration);
+            expiration
+            );
         var tokenHandler = new JwtSecurityTokenHandler();
         return tokenHandler.WriteToken(token);
     }
@@ -35,8 +37,8 @@ public class TokenService : ITokenService
 
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration)
     {
-        var validIssuer = _configuration["ValidIssuer"];
-        var validAudience = _configuration["ValidAudience"];
+        var validIssuer = _configuration["JwtSettings:ValidIssuer"];
+        var validAudience = _configuration["JwtSettings:ValidAudience"];
        return new(
             validIssuer,
             validAudience,
@@ -71,7 +73,6 @@ public class TokenService : ITokenService
     {
         
         var issuerSigningKey = _configuration["JwtSettings:IssuerSigningKey"];
-        
         return new SigningCredentials(
             new SymmetricSecurityKey(
                 Encoding.UTF8.GetBytes(issuerSigningKey)
