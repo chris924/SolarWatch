@@ -1,11 +1,13 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using SolarWatch;
 using SolarWatch.Repository;
 using SolarWatch.Services.Repository;
 using Microsoft.Extensions.Configuration;
 using SolarWatch.Authentication;
+using SolarWatch.Services.Authentication;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,22 @@ builder.Services.AddSingleton<IGeoLocatingAPI, GeoLocatingAPI>();
 builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
 builder.Services.AddDbContext<SolarWatchApiContext>();
 builder.Services.AddDbContext<IdentityUsersContext>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services
+    .AddIdentityCore<IdentityUser>(options =>
+    {
+        options.SignIn.RequireConfirmedAccount = false;
+        options.User.RequireUniqueEmail = true;
+        options.Password.RequireDigit = false;
+        options.Password.RequiredLength = 6;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequireLowercase = false;
+    })
+    .AddEntityFrameworkStores<IdentityUsersContext>();
+
+
 
 var jwtSettingsConfiguration = new ConfigurationBuilder()
     .SetBasePath(Directory.GetCurrentDirectory())
