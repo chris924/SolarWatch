@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "80:80"
+      - "9000:80"
     environment:
       - DB_SERVER=solarwatch-db
 
