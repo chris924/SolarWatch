@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SolarWatch.Model;
 using SolarWatch.Repository;
@@ -157,7 +158,7 @@ public class SunriseSunsetController : ControllerBase
             
             if (updatedCity == null)
             {
-                return BadRequest("Bad City name! Not found in database");
+                return BadRequest("Bad City name! Not found in database.");
             }
 
             updatedCity.Country = country;
@@ -177,6 +178,30 @@ public class SunriseSunsetController : ControllerBase
         {
             _logger.LogError(e, "Error modifying data");
             return NotFound("Error modifying data");
+        }
+    }
+
+    [HttpDelete("DeleteCityWithSunriseSunset"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<City>> DeleteCityWithSunriseSunset(string city)
+    {
+        try
+        {
+            var deleteCity = _solarRepository.GetByName(city);
+
+            if (deleteCity == null)
+            {
+                return BadRequest("Bad City name! Not found in database.");
+            }
+
+            _solarRepository.Delete(deleteCity);
+
+            return Ok($"{deleteCity.Name} with ID: {deleteCity.CityId} deleted.");
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error deleting data");
+            return NotFound("Error deleting data");
         }
     }
     
