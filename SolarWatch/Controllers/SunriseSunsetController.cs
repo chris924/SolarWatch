@@ -26,7 +26,7 @@ public class SunriseSunsetController : ControllerBase
         _solarRepository = solarRepository;
     }
 
-    [HttpGet("get-sunrise-sunset"), Authorize]
+    [HttpGet("get-sunrise-sunset"), Authorize(Roles = "User, Admin")]
     public async Task<ActionResult<SunriseSunsetModel>> Get(string city)
     {
 
@@ -83,7 +83,7 @@ public class SunriseSunsetController : ControllerBase
 
     internal async Task<City?> CheckDbForCity(string name)
     {
-        return _solarRepository.GetByName(name);
+        return  _solarRepository.GetByName(name);
     }
 
 
@@ -110,6 +110,41 @@ public class SunriseSunsetController : ControllerBase
         newSetRiseTime.CityData = newCity;
             
         _solarRepository.Add(newCity);
+    }
+
+    [HttpPost("UploadACityWithSunriseSunset"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<City>> UploadACityWithSunriseSunset(string city, TimeSpan sunrise, TimeSpan sunset, double lat, double lon, string state, string country)
+    {
+        try
+        {
+            
+            LatLonModel newCity = new LatLonModel
+            {
+                City = city,
+                Country = country,
+                Lat = lat,
+                Lon = lon,
+                State = state
+            };
+
+            SunriseSunsetModel newSunriseSunsetModel = new SunriseSunsetModel
+            {
+                City = city,
+                Sunrise = sunrise,
+                Sunset = sunset
+            };
+            
+          AddCityToDb(newCity, newSunriseSunsetModel);
+
+            return Ok(newCity);
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error uploading data");
+            return NotFound("Error uploading data");
+        }
+        
     }
     
 }
