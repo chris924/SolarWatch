@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SolarWatch.Model;
 
 public class SetRiseTime
@@ -7,5 +9,6 @@ public class SetRiseTime
     public TimeSpan Sunset { get; set; }
 
     public int CityId { get; set; } // FOREIGN  KEY
+    [JsonIgnore]
     public City CityData { get; set; } // Navigation property!
 }

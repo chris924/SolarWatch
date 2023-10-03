@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace SolarWatch.Model;
 
 public class City
@@ -8,7 +10,7 @@ public class City
     public double Latitude { get; set; }
     public string State { get; set; }
     public string Country { get; set; }
-    
+    [JsonIgnore]
     public SetRiseTime SetRise { get; set; } // Navigation property!
     
 }

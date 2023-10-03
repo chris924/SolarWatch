@@ -52,7 +52,12 @@ public class SunriseSunsetController : ControllerBase
             
             var riseSetModel = await GetSunriseSunsetData(latLonForCity.Lat, latLonForCity.Lon, latLonForCity.City); // Sunrise, sunset values with city name
 
-           AddCityToDb(latLonForCity, riseSetModel);
+            var newCity = CityCreator(latLonForCity.City, riseSetModel.Sunrise, riseSetModel.Sunset, latLonForCity.Lat,
+                latLonForCity.Lon, latLonForCity.State, latLonForCity.Country);
+            
+            
+
+           AddCityToDb(newCity);
             
             return Ok(riseSetModel);
         }
@@ -87,30 +92,39 @@ public class SunriseSunsetController : ControllerBase
     }
 
 
-    private void AddCityToDb(LatLonModel model, SunriseSunsetModel result)
+    private void AddCityToDb(City city)
+    {
+        _solarRepository.Add(city);
+    }
+
+    private City CityCreator(string city, TimeSpan sunrise, TimeSpan sunset, double lat, double lon, string state, string country)
     {
         SetRiseTime newSetRiseTime = new SetRiseTime
         {
-            Sunrise = result.Sunrise,
-            Sunset = result.Sunset
+            Sunrise = sunrise,
+            Sunset = sunset
         };
 
 
         City newCity = new City
         {
-            Name = model.City,
-            Latitude = model.Lat,
-            Longitude = model.Lon,
-            Country = model.Country,
-            State = model.State,
+            Name = city,
+            Latitude = lat,
+            Longitude = lon,
+            Country = country,
+            State = state,
             SetRise = newSetRiseTime 
         };
 
 
         newSetRiseTime.CityData = newCity;
-            
-        _solarRepository.Add(newCity);
+
+        return newCity;
+
     }
+    
+    
+    
 
     [HttpPost("UploadACityWithSunriseSunset"), Authorize(Roles = "Admin")]
     public async Task<ActionResult<City>> UploadACityWithSunriseSunset(string city, TimeSpan sunrise, TimeSpan sunset, double lat, double lon, string state, string country)
@@ -118,23 +132,9 @@ public class SunriseSunsetController : ControllerBase
         try
         {
             
-            LatLonModel newCity = new LatLonModel
-            {
-                City = city,
-                Country = country,
-                Lat = lat,
-                Lon = lon,
-                State = state
-            };
-
-            SunriseSunsetModel newSunriseSunsetModel = new SunriseSunsetModel
-            {
-                City = city,
-                Sunrise = sunrise,
-                Sunset = sunset
-            };
+          var newCity = CityCreator(city, sunrise, sunset, lat, lon, state, country);
             
-          AddCityToDb(newCity, newSunriseSunsetModel);
+          _solarRepository.Add(newCity);
 
             return Ok(newCity);
 
@@ -146,5 +146,39 @@ public class SunriseSunsetController : ControllerBase
         }
         
     }
+
+    [HttpPatch("UpdateCityWithSunriseSunset"), Authorize(Roles = "Admin")]
+    public async Task<ActionResult<City>> UpdateACityWithSunriseSunset(string city, TimeSpan sunrise, TimeSpan sunset,
+        double lat, double lon, string state, string country)
+    {
+        try
+        {
+            var updatedCity = _solarRepository.GetByName(city);
+            
+            if (updatedCity == null)
+            {
+                return BadRequest("Bad City name! Not found in database");
+            }
+
+            updatedCity.Country = country;
+            updatedCity.Name = city;
+            updatedCity.State = state;
+            updatedCity.Latitude = lat;
+            updatedCity.Longitude = lon;
+            updatedCity.SetRise.Sunrise = sunrise;
+            updatedCity.SetRise.Sunset = sunset;
+            
+           _solarRepository.Update(updatedCity);
+
+            return Ok(updatedCity);
+
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error modifying data");
+            return NotFound("Error modifying data");
+        }
+    }
+    
     
 }
