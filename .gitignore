@@ -9,3 +9,4 @@ SolarWatch.sln.DotSettings.user
 .vs
 SolarWatch/.idea
 .env
+SolarWatch/jwtSettings.json
