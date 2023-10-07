@@ -14,9 +14,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: List Files in Directory   # Add this step to list files
-        run: ls -R
-
       - name: Set up Docker Compose
         run: |
           sudo apt-get update
@@ -26,9 +23,9 @@ jobs:
         env:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           ASPNETCORE_CONNECTIONSTRING: ${{secrets.CONNECTIONSTRING}}
-          IssuerSigningKey: ${{secrets.IssuerSigningKey}}
-          ValidIssuerKey: ${{secrets.ValidIssuerKey}}
-          ValidAudienceKey: ${{secrets.ValidAudienceKey}}
+          IssuerSigningKey: ${{secrets.ISSUERSIGNINGKEY}}
+          ValidIssuerKey: ${{secrets.VALIDISSUERKEY}}
+          ValidAudienceKey: ${{secrets.VALIDAUDIENCEKEY}}
         run: |
          docker-compose -f docker-compose.yml up -d
          
@@ -38,7 +35,7 @@ jobs:
           username: ${{secrets.DOCKERHUB_USERNAME}}
           password: ${{secrets.DOCKERHUB_PASSWORD}}
           
-      - name: Push Docker Compose Image
+      - name: Push Docker Compose Image to Docker Hub
         run: docker-compose push
         env:
           ASPNETCORE_CONNECTIONSTRING: ${{secrets.CONNECTIONSTRING}}
