@@ -11,9 +11,9 @@ services:
       - database
     environment:
       ASPNETCORE_CONNECTIONSTRING: ${ASPNETCORE_CONNECTIONSTRING}
-      IssuerSigningKey: ${IssuerSigningKey}
-      ValidIssuerKey: ${ValidIssuerKey}
-      ValidAudienceKey: ${ValidAudienceKey}
+      ISSUERSIGNINGKEY: ${ISSUERSIGNINGKEY}
+      VALIDISSUERKEY: ${VALIDISSUERKEY}
+      VALIDAUDIENCEKEY: ${VALIDAUDIENCEKEY}
     networks:
       - solarwatch-net
 
