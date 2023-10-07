@@ -20,6 +20,9 @@ public class AuthController : ControllerBase
     [HttpPost("Register")]
     public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
+        Console.WriteLine($"REQUEST: {request.Email} {request.UserName} {request.Password}");
+        
+        
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
