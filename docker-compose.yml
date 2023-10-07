@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: SolarWatch 
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - database
+    environment:
+      ASPNETCORE_CONNECTIONSTRING: ${ASPNETCORE_CONNECTIONSTRING}
+      IssuerSigningKey: ${IssuerSigningKey}
+      ValidIssuerKey: ${ValidIssuerKey}
+      ValidAudienceKey: ${ValidAudienceKey}
+    networks:
+      - solarwatch-net
+
+  frontend:
+    build:
+      context: frontend/solarwatchfrontend 
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - solarwatch-net
+
+  database:
+    image: mcr.microsoft.com/mssql/server
+    environment:
+      SA_PASSWORD: ${DATABASE_PASSWORD}
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    networks:
+      - solarwatch-net
+
+networks:
+  solarwatch-net:
+
+

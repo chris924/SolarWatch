@@ -1,5 +1,8 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using SolarWatch.Model;
+using DotNetEnv;
 
 namespace SolarWatch;
 
@@ -7,20 +10,14 @@ public class SolarWatchApiContext : DbContext
 {
     public DbSet<City> Cities { get; set; }
     public DbSet<SetRiseTime> SetRiseTimes { get; set; }
-    
-    private readonly IConfiguration _config;
-
-    public SolarWatchApiContext(IConfiguration config)
-    {
-        _config = config;
-    }
 
     
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    
+    public SolarWatchApiContext(DbContextOptions<SolarWatchApiContext> options) : base(options)
     {
-        var connectionString = _config["SolarWatch:ConnectionString"];
-        optionsBuilder.UseSqlServer(connectionString);
+        
     }
+
     
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

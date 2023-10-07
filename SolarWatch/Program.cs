@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SolarWatch;
 using SolarWatch.Repository;
@@ -27,10 +28,11 @@ configuration.AddJsonFile("jwtSettings.json", optional: true);
     .AddJsonFile("jwtSettings.json", optional: true)
     .Build();*/
 
-var validIssuer = configuration["ValidIssuer:ValidIssuerKey"];
-var validAudience = configuration["ValidAudience:ValidAudienceKey"];
-var issuerSigningKey = configuration["JwtSettings:IssuerSigningKey"];
+var validIssuer = Environment.GetEnvironmentVariable("ValidIssuerKey");
+var validAudience = Environment.GetEnvironmentVariable("ValidAudienceKey");
+var issuerSigningKey = Environment.GetEnvironmentVariable("IssuerSigningKey");
 
+var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
 
 
 AddServices();
@@ -40,7 +42,7 @@ AddAuthentication();
 AddIdentity();
 
 var app = builder.Build();
-
+PrepDb.PrepPopulation(app);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -57,8 +59,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-AddRoles();
-AddAdmin();
+
 
 app.Run();
 
@@ -114,8 +115,8 @@ void ConfigureSwagger()
 
 void AddDbContext()
 {
-    builder.Services.AddDbContext<SolarWatchApiContext>();
-    builder.Services.AddDbContext<IdentityUsersContext>();
+    builder.Services.AddDbContext<SolarWatchApiContext>(opt => opt.UseSqlServer(connectionString));
+   builder.Services.AddDbContext<IdentityUsersContext>(opt => opt.UseSqlServer(connectionString));
 }
 
 void AddAuthentication()
@@ -159,47 +160,3 @@ void AddIdentity()
 }
 
 
-void AddRoles()
-{
-    using var scope = app.Services.CreateScope(); 
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-    var tAdmin = CreateAdminRole(roleManager);
-    tAdmin.Wait();
-
-    var tUser = CreateUserRole(roleManager);
-    tUser.Wait();
-}
-
-async Task CreateAdminRole(RoleManager<IdentityRole> roleManager)
-{
-    await roleManager.CreateAsync(new IdentityRole("Admin")); 
-}
-
-async Task CreateUserRole(RoleManager<IdentityRole> roleManager)
-{
-    await roleManager.CreateAsync(new IdentityRole("User")); 
-}
-
-void AddAdmin()
-{
-    var tAdmin = CreateAdminIfNotExists();
-    tAdmin.Wait();
-}
-
-async Task CreateAdminIfNotExists()
-{
-    using var scope = app.Services.CreateScope();
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>();
-    var adminInDb = await userManager.FindByEmailAsync("admin@admin.com");
-    if (adminInDb == null)
-    {
-        var admin = new IdentityUser { UserName = "admin", Email = "admin@admin.com" };
-        var adminCreated = await userManager.CreateAsync(admin, "admin123");
-
-        if (adminCreated.Succeeded)
-        {
-            await userManager.AddToRoleAsync(admin, "Admin");
-        }
-    }
-}

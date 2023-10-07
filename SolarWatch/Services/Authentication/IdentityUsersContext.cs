@@ -7,19 +7,12 @@ namespace SolarWatch.Authentication;
 public class IdentityUsersContext : IdentityDbContext<IdentityUser, IdentityRole, string>
 {
 
-    private readonly IConfiguration _config;
     
-    public IdentityUsersContext(DbContextOptions<IdentityUsersContext> options, IConfiguration config)
-        : base(options)
+    
+    public IdentityUsersContext(DbContextOptions<IdentityUsersContext> options) : base(options)
     {
-        _config = config;
     }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        var connectionString = _config["SolarWatch:ConnectionString"];
-        options.UseSqlServer(connectionString);
-    }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
