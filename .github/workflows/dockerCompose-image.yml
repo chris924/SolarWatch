@@ -39,4 +39,8 @@ jobs:
         run: docker-compose push
         env:
           ASPNETCORE_CONNECTIONSTRING: ${{secrets.CONNECTIONSTRING}}
+          DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
+          ISSUERSIGNINGKEY: ${{secrets.ISSUERSIGNINGKEY}}
+          VALIDISSUERKEY: ${{secrets.VALIDISSUERKEY}}
+          VALIDAUDIENCEKEY: ${{secrets.VALIDAUDIENCEKEY}}
       
