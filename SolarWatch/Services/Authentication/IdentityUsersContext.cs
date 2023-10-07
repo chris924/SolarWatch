@@ -13,6 +13,17 @@ public class IdentityUsersContext : IdentityDbContext<IdentityUser, IdentityRole
     {
     }
     
+    
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
+        
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(connectionString);
+        }
+    }
+    
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

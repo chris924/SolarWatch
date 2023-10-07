@@ -4,13 +4,21 @@ import {BrowserRouter, createBrowserRouter, RouterProvider, Route} from 'react-r
 import reportWebVitals from './reportWebVitals';
 import TestPage from './Pages/TestPage';
 import Layout from './Pages/Layout';
+import RegisterPage from './Pages/RegisterPage';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
-    children: []
+    children: [
+      {
+        path: "/register",
+        element: <RegisterPage/>
+      }
+
+
+    ]
   }
 ]);
 

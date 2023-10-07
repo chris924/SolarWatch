@@ -18,15 +18,21 @@ using SolarWatch.Services.Authentication.TokenService;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var configuration = builder.Configuration;
 
-configuration.AddJsonFile("jwtSettings.json", optional: true);
-
-
-/*var jwtSettingsConfiguration = new ConfigurationBuilder()
-    .SetBasePath(Directory.GetCurrentDirectory())
-    .AddJsonFile("jwtSettings.json", optional: true)
-    .Build();*/
+DotNetEnv.Env.Load();
 
 var validIssuer = Environment.GetEnvironmentVariable("ValidIssuerKey");
 var validAudience = Environment.GetEnvironmentVariable("ValidAudienceKey");
@@ -42,6 +48,7 @@ AddAuthentication();
 AddIdentity();
 
 var app = builder.Build();
+app.UseCors();
 PrepDb.PrepPopulation(app);
 
 // Configure the HTTP request pipeline.
