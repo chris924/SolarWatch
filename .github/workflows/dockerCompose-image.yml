@@ -23,9 +23,9 @@ jobs:
         env:
           DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
           ASPNETCORE_CONNECTIONSTRING: ${{secrets.CONNECTIONSTRING}}
-          IssuerSigningKey: ${{secrets.ISSUERSIGNINGKEY}}
-          ValidIssuerKey: ${{secrets.VALIDISSUERKEY}}
-          ValidAudienceKey: ${{secrets.VALIDAUDIENCEKEY}}
+          ISSUERSIGNINGKEY: ${{secrets.ISSUERSIGNINGKEY}}
+          VALIDISSUERKEY: ${{secrets.VALIDISSUERKEY}}
+          VALIDAUDIENCEKEY: ${{secrets.VALIDAUDIENCEKEY}}
         run: |
          docker-compose -f docker-compose.yml up -d
          
