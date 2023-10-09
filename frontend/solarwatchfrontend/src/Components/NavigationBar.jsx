@@ -7,9 +7,17 @@ import NavDropdown from "react-bootstrap/NavDropdown";
 import "bootstrap/dist/css/bootstrap.css";
 import { ReactDOM } from "react";
 import NavItem from "react-bootstrap/NavItem";
+import Cookies from "js-cookie";
 
 export default function NavigationBar()
 {
+    const handleLogout = () => {
+
+      Cookies.remove("jwtToken");
+
+    }
+
+
     return(
 
     
@@ -23,6 +31,7 @@ export default function NavigationBar()
         <Nav>
           <NavLink><Link to="/register">Register</Link></NavLink>
           <NavLink> <Link to="/login">Login</Link></NavLink>
+          <NavLink> <Link to="/login" onClick={handleLogout}>Log out</Link></NavLink>
         </Nav>
       </Container>
     </Navbar>

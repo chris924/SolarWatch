@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet, Link } from "react-router-dom";
-import TestPage from "./TestPage";
+import TestPage from "./SolarPage";
 import NavigationBar from "../Components/NavigationBar.jsx"
 
 const Layout = () => {

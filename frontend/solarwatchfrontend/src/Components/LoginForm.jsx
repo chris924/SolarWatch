@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom"; // Import useNavigate instead of useHistory
+import { useNavigate } from "react-router-dom"; 
 import Cookies from "js-cookie";
 
 export default function LoginForm() {
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate(); 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loginResponse, setLoginResponse] = useState(false);
@@ -27,9 +27,8 @@ export default function LoginForm() {
         response.json().then((data) => {
           const token = data.token;
           Cookies.set("jwtToken", token);
-          console.log(token);
           console.log("Successfully logged in!");
-          navigate("/main"); // Use navigate to change the route
+          navigate("/solar-watch"); // Use navigate to change the route
         });
       } else {
         console.log("Error during login");

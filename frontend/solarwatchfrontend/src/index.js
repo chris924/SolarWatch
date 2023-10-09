@@ -2,10 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import {BrowserRouter, createBrowserRouter, RouterProvider, Route} from 'react-router-dom';
 import reportWebVitals from './reportWebVitals';
-import TestPage from './Pages/TestPage';
 import Layout from './Pages/Layout';
 import RegisterPage from './Pages/RegisterPage';
 import LoginPage from './Pages/LoginPage';
+import SolarPage from './Pages/SolarPage';
 
 
 const router = createBrowserRouter([
@@ -22,8 +22,8 @@ const router = createBrowserRouter([
         element: <LoginPage/>
       },
       {
-        path: "/main",
-        element: <TestPage/>
+        path: "/solar-watch",
+        element: <SolarPage/>
       }
 
 
