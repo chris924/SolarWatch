@@ -20,6 +20,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage/>
+      },
+      {
+        path: "/main",
+        element: <TestPage/>
       }
 
 

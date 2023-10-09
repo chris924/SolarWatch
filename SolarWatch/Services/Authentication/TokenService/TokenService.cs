@@ -37,8 +37,12 @@ public class TokenService : ITokenService
 
     private JwtSecurityToken CreateJwtToken(List<Claim> claims, SigningCredentials credentials, DateTime expiration)
     {
-        var validIssuer = Environment.GetEnvironmentVariable("VALIDISSUER");
-        var validAudience = Environment.GetEnvironmentVariable("VALIDAUDIENCE");
+        DotNetEnv.Env.Load();
+        var validIssuer = Environment.GetEnvironmentVariable("VALIDISSUERKEY");
+        var validAudience = Environment.GetEnvironmentVariable("VALIDAUDIENCEKEY");
+        var issuerSigningKey = Environment.GetEnvironmentVariable("ISSUERSIGNINGKEY");
+        
+        
        return new(
             validIssuer,
             validAudience,
@@ -77,7 +81,7 @@ public class TokenService : ITokenService
 
     private SigningCredentials CreateSigningCredentials()
     {
-
+        DotNetEnv.Env.Load();
         var issuerSigningKey = Environment.GetEnvironmentVariable("ISSUERSIGNINGKEY");
         return new SigningCredentials(
             new SymmetricSecurityKey(

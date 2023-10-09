@@ -7,14 +7,11 @@ using SolarWatch;
 using SolarWatch.Repository;
 using SolarWatch.Services.Repository;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using SolarWatch.Authentication;
 using SolarWatch.Services.Authentication;
 using SolarWatch.Services.Authentication.TokenService;
-
-
-
-
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,9 +21,11 @@ builder.Services.AddCors(options =>
     options.AddDefaultPolicy(
         policy =>
         {
-            policy.AllowAnyOrigin()
+            policy
+                .SetIsOriginAllowed(_ => true)
                 .AllowAnyHeader()
-                .AllowAnyMethod();
+                .AllowAnyMethod()
+                .AllowCredentials();
         });
 });
 
@@ -34,9 +33,9 @@ var configuration = builder.Configuration;
 
 DotNetEnv.Env.Load();
 
-var validIssuer = Environment.GetEnvironmentVariable("ValidIssuerKey");
-var validAudience = Environment.GetEnvironmentVariable("ValidAudienceKey");
-var issuerSigningKey = Environment.GetEnvironmentVariable("IssuerSigningKey");
+var validIssuer = Environment.GetEnvironmentVariable("VALIDISSUERKEY");
+var validAudience = Environment.GetEnvironmentVariable("VALIDAUDIENCEKEY");
+var issuerSigningKey = Environment.GetEnvironmentVariable("ISSUERSIGNINGKEY");
 
 var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
 
@@ -49,13 +48,14 @@ AddIdentity();
 
 var app = builder.Build();
 app.UseCors();
-PrepDb.PrepPopulation(app);
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    IdentityModelEventSource.ShowPII = true;
 }
 
 app.UseHttpsRedirection();
@@ -67,6 +67,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
+PrepDb.PrepPopulation(app);
 
 app.Run();
 
@@ -132,10 +133,11 @@ void AddAuthentication()
         .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         .AddJwtBearer(options =>
         {
+            options.IncludeErrorDetails = true;
             if (issuerSigningKey != null)
                 options.TokenValidationParameters = new TokenValidationParameters()
                 {
-                    ClockSkew = TimeSpan.Zero,
+                    ClockSkew = TimeSpan.FromMinutes(5),
                     ValidateIssuer = true,
                     ValidateAudience = true,
                     ValidateLifetime = true,
@@ -144,7 +146,7 @@ void AddAuthentication()
                     ValidAudience = validAudience,
                     IssuerSigningKey = new SymmetricSecurityKey(
                         Encoding.UTF8.GetBytes(issuerSigningKey)
-                    ),
+                    )
                 };
         });
 }
