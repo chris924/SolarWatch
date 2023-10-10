@@ -60,7 +60,7 @@ export default function SolarWatch() {
         <input type="submit" value="Search City" />
       </form>
       <div className='citydata'>
-      <p>{cityData.city}</p>
+      <p>City {cityData.city}</p>
       <p>Sunrise {cityData.sunrise}</p>
       <p>Sunset {cityData.sunset}</p>
       </div>

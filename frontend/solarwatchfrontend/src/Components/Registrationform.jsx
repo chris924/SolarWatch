@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; 
 
 export default function RegistrationFrom()
 {
+  const navigate = useNavigate();
    const [email, setEmail] = useState("");
    const [username, setUsername] = useState("");
    const [password, setPassword] = useState("");
+   const [registerResponse, setRegisterResponse] = useState(null); 
     
 
     function SendRegister(email, username, password)
@@ -29,8 +32,10 @@ export default function RegistrationFrom()
               .then((result) => {
                 if (result.ok) {
                   console.log("Registered user");
+                  navigate("/login");
                 } else {
                   console.log("Error during register");
+                  setRegisterResponse("Error during register");
                 }
               })
               .catch((error) => {
@@ -56,14 +61,23 @@ export default function RegistrationFrom()
     return(
         <>
         <form onSubmit={handleSubmit}>
-        <label for="email">E-mail:</label><br />
+        <label htmlFor="email">E-mail:</label><br />
         <input type="text" id="email" name="email" onChange={(e) => setEmail(e.target.value)}/><br />
-        <label for="username">Username:</label><br />
+        <label htmlFor="username">Username:</label><br />
         <input type="text" id="username" name="username" onChange={(e) => setUsername(e.target.value)}/><br />
-        <label for="password">Password:</label><br />
+        <label htmlFor="password">Password:</label><br />
         <input type="password" id="password" name="password" onChange={(e) => setPassword(e.target.value)}/><br />
         <input type="submit" value="Register"></input>
         </form>
+
+
+        {registerResponse && (
+        <div className="registererror">
+          <p>{registerResponse}</p>
+        </div>
+      )}
+
+
         </>
     )
 

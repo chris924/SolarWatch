@@ -9,9 +9,8 @@ import NavigationBar from '../Components/NavigationBar';
           <div className="video-background">
             <video autoPlay loop muted>
               <source src={videobackground} type="video/mp4" />
-              Your browser does not support the video tag.
             </video>
-            {/* Add other content on top of the video background */}
+           
             <div className="content">
             <Layout /> 
             </div>

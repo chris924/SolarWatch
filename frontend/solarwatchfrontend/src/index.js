@@ -23,6 +23,10 @@ const router = createBrowserRouter([
         element: <LoginPage/>
       },
       {
+        path: "/logout",
+        element: <LoginPage/>
+      },
+      {
         path: "/solar-watch",
         element: <SolarPage/>
       }
