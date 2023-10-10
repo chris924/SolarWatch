@@ -8,6 +8,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import { ReactDOM } from "react";
 import NavItem from "react-bootstrap/NavItem";
 import Cookies from "js-cookie";
+import "../Styles/navigationbar.css";
 
 export default function NavigationBar()
 {
@@ -18,24 +19,40 @@ export default function NavigationBar()
     }
 
 
-    return(
+    return (
+      <Navbar
+        bg="transparent"
+        variant="dark"
+        expand="lg"
+        style={{ color: "white" }}
+      >
+        <Container>
+          <Navbar.Toggle
+            aria-controls="basic-navbar-nav"
+            className="ml-auto"
+          />
+          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-center">
+            <Nav>
+              <Nav.Item>
+                <Link to="/register" className="navbartext">
+                  Register&nbsp;
+                </Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Link to="/login" className="navbartext">
+                  Login&nbsp;
+                </Link>
+              </Nav.Item>
+              <Nav.Item>
+                <Link to="/login" onClick={handleLogout} className="navbartext">
+                  Logout&nbsp;
+                </Link>
+              </Nav.Item>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
+      </Navbar>
+    );
+  }
+  
 
-    
-    <Navbar
-      bg="dark"
-      variant="dark"
-      expand="lg"
-      className="me-auto my-2 my-lg-0"
-    >
-      <Container style={{ float: "right" }} fluid>
-        <Nav>
-          <NavLink><Link to="/register">Register</Link></NavLink>
-          <NavLink> <Link to="/login">Login</Link></NavLink>
-          <NavLink> <Link to="/login" onClick={handleLogout}>Log out</Link></NavLink>
-        </Nav>
-      </Container>
-    </Navbar>
-
-    )
-
-}

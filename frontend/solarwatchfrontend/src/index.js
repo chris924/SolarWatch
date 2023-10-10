@@ -6,12 +6,13 @@ import Layout from './Pages/Layout';
 import RegisterPage from './Pages/RegisterPage';
 import LoginPage from './Pages/LoginPage';
 import SolarPage from './Pages/SolarPage';
+import VideoBackground from './Pages/VideoBackground';
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <VideoBackground />,
     children: [
       {
         path: "/register",

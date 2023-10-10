@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom"; 
 import Cookies from "js-cookie";
 
+
+
 export default function LoginForm() {
   const navigate = useNavigate(); 
   const [email, setEmail] = useState("");
@@ -28,7 +30,7 @@ export default function LoginForm() {
           const token = data.token;
           Cookies.set("jwtToken", token);
           console.log("Successfully logged in!");
-          navigate("/solar-watch"); // Use navigate to change the route
+          navigate("/solar-watch"); 
         });
       } else {
         console.log("Error during login");

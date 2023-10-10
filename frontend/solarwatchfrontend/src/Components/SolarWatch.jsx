@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom"; 
+import "../Styles/solarwatch.css";
+
 
 export default function SolarWatch() {
   const navigate = useNavigate();
-  const [baseText, setBaseText] = useState([]);
   const [city, setCity] = useState("");
   const [bearer, setBearer] = useState("");
   const [cityData, setCityData] = useState("");
@@ -58,10 +59,11 @@ export default function SolarWatch() {
         /><br />
         <input type="submit" value="Search City" />
       </form>
-
+      <div className='citydata'>
       <p>{cityData.city}</p>
-      <p>{cityData.sunrise}</p>
-      <p>{cityData.sunset}</p>
+      <p>Sunrise {cityData.sunrise}</p>
+      <p>Sunset {cityData.sunset}</p>
+      </div>
     </>
   );
 }

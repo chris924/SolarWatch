@@ -1,0 +1,27 @@
+.citydata {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    text-align: center;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .citydata p {
+    margin: 8px 0;
+    font-size: 18px;
+    color: #333;
+  }
+  
+  .citydata p:first-child {
+    font-size: 24px;
+    font-weight: bold;
+    color: #222;
+  }
+  
+  .citydata p:last-child {
+    font-size: 16px;
+  }
