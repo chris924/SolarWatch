@@ -1,21 +1,37 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using NUnit.Framework;
 
-namespace SolarWatch.IntegrationTests.ControllerTests;
-
-public class SunriseSunsetControllerTests : IDisposable
+namespace SolarWatch.IntegrationTests.ControllerTests
 {
-    private CustomWebApplicationFactory _factory;
-    private HttpClient _client;
-
-    private SunriseSunsetControllerTests()
+    [TestFixture]
+    public class SunriseSunsetControllerTests
     {
-        _factory = new CustomWebApplicationFactory();
-        _client = _factory.CreateClient();
-    }
+        private CustomWebApplicationFactory _factory;
+        private HttpClient _client;
 
-    public void Dispose()
-    {
-        _factory.Dispose();
-        _client.Dispose();
+        [OneTimeSetUp]
+        public void OneTimeSetUp()
+        {
+            _factory = new CustomWebApplicationFactory();
+            _client = _factory.CreateClient();
+
+
+        }
+
+        [OneTimeTearDown]
+        public void OneTimeTearDown()
+        {
+            _factory.Dispose();
+            _client.Dispose();
+        }
+
+        [Test]
+        public async Task Unauthorized_Get_Gives_Unauthorized()
+        {
+            var response = await _client.GetAsync("/SunriseSunset/get-sunrise-sunset?city=London");
+            Assert.That(response.StatusCode, Is.EqualTo(System.Net.HttpStatusCode.Unauthorized));
+        }
     }
 }

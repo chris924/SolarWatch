@@ -1,3 +1,4 @@
+using DotNetEnv;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -11,16 +12,22 @@ public static class PrepDb
 {
 
 
-    public static void PrepPopulation(IApplicationBuilder app)
+    public static void PrepPopulation(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        Console.WriteLine("Running PrepDb...");
 
         using (var serviceScope = app.ApplicationServices.CreateScope())
         {
-            SeedData(serviceScope.ServiceProvider.GetService<SolarWatchApiContext>(),
-                serviceScope.ServiceProvider.GetService<IdentityUsersContext>());
-            AddRoles(serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>());
-            AddAdmin(serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>());
+            
+            if (!env.IsEnvironment("Test"))
+            {
+                Console.WriteLine($"Environment is: {env.EnvironmentName}, running PrepDb... ");
+                SeedData(serviceScope.ServiceProvider.GetService<SolarWatchApiContext>(),
+                    serviceScope.ServiceProvider.GetService<IdentityUsersContext>());
+                AddRoles(serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>());
+                AddAdmin(serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>());
+            }
+            Console.WriteLine($"Environment is: {env.EnvironmentName},not running PrepDb... ");
+           
         }
 
         static void SeedData(SolarWatchApiContext solarContext, IdentityUsersContext identityContext)
@@ -29,6 +36,8 @@ public static class PrepDb
 
             Thread.Sleep(10000);
 
+            Console.WriteLine(solarContext);
+            
             solarContext.Database.Migrate();
             identityContext.Database.Migrate();
 

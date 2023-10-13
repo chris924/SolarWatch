@@ -54,7 +54,7 @@ public class Program
         app.UseCors();
 
 
-// Configure the HTTP request pipeline.
+
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
@@ -71,7 +71,7 @@ public class Program
         app.MapControllers();
 
 
-        PrepDb.PrepPopulation(app);
+        PrepDb.PrepPopulation(app, app.Environment);
 
         app.Run();
 
