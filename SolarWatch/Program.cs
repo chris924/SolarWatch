@@ -1,4 +1,5 @@
 using System.Text;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Logging;
 using Microsoft.OpenApi.Models;
 using SolarWatch.Authentication;
+using SolarWatch.Controllers;
 using SolarWatch.Services.Authentication;
 using SolarWatch.Services.Authentication.TokenService;
 
@@ -43,10 +45,9 @@ public class Program
 
         var connectionString = Environment.GetEnvironmentVariable("ASPNETCORE_CONNECTIONSTRING");
 
-
+        AddDbContext();
         AddServices();
         ConfigureSwagger();
-        AddDbContext();
         AddAuthentication();
         AddIdentity();
 
@@ -83,12 +84,13 @@ public class Program
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddSingleton<IJsonProcessor, JsonProcessor>();
-            builder.Services.AddSingleton<ISunriseSunsetAPI, SunriseSunsetAPI>();
-            builder.Services.AddSingleton<IGeoLocatingAPI, GeoLocatingAPI>();
-            builder.Services.AddSingleton<ISolarRepository, SolarRepository>();
+            builder.Services.AddTransient<IJsonProcessor, JsonProcessor>();
+            builder.Services.AddTransient<ISunriseSunsetAPI, SunriseSunsetAPI>();
+            builder.Services.AddTransient<IGeoLocatingAPI, GeoLocatingAPI>();
+            builder.Services.AddTransient<ISolarRepository, SolarRepository>();
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenService, TokenService>(_ => new TokenService(configuration));
+            
 
 
         }
@@ -127,8 +129,8 @@ public class Program
 
         void AddDbContext()
         {
-            builder.Services.AddDbContext<SolarWatchApiContext>(opt => opt.UseSqlServer(connectionString));
-            builder.Services.AddDbContext<IdentityUsersContext>(opt => opt.UseSqlServer(connectionString));
+            builder.Services.AddDbContext<SolarWatchApiContext>();
+            builder.Services.AddDbContext<IdentityUsersContext>();
         }
 
         void AddAuthentication()

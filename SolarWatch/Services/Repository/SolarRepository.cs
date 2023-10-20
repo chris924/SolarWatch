@@ -7,25 +7,25 @@ namespace SolarWatch.Services.Repository;
 public class SolarRepository : ISolarRepository
 {
 
-    private SolarWatchApiContext dbContext;
+    private SolarWatchApiContext _dbContext;
 
   
     
     
-    public SolarRepository(IConfiguration config)
+    public SolarRepository(SolarWatchApiContext dbContext)
     {
-        dbContext = new SolarWatchApiContext(new DbContextOptions<SolarWatchApiContext>());
+        _dbContext = dbContext;
     }
     
     
     public IEnumerable<City> GetAll()
     {
-        return dbContext.Cities.ToList();
+        return _dbContext.Cities.ToList();
     }
 
     public City? GetByName(string name)
     {
-        var cityResult = dbContext.Cities.FirstOrDefault(x => x.Name == name);
+        var cityResult = _dbContext.Cities.FirstOrDefault(x => x.Name == name);
         if (cityResult != null)
         {
             cityResult.SetRise = GetSetRiseByCity(cityResult);
@@ -39,26 +39,26 @@ public class SolarRepository : ISolarRepository
 
     public SetRiseTime? GetSetRiseByCity(City city)
     {
-        return dbContext.SetRiseTimes.FirstOrDefault(x => x.CityId == city.CityId);
+        return _dbContext.SetRiseTimes.FirstOrDefault(x => x.CityId == city.CityId);
     }
     
     
 
     public void Add(City city)
     {
-        dbContext.Add(city);
-        dbContext.SaveChanges();
+        _dbContext.Add(city);
+        _dbContext.SaveChanges();
     }
 
     public void Delete(City city)
     {
-        dbContext.Remove(city);
-        dbContext.SaveChanges();
+        _dbContext.Remove(city);
+        _dbContext.SaveChanges();
     }
 
     public void Update(City city)
     {
-        dbContext.Update(city);
-        dbContext.SaveChanges();
+        _dbContext.Update(city);
+        _dbContext.SaveChanges();
     }
 }

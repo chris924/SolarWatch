@@ -13,7 +13,7 @@ public class SolarWatchApiContext : DbContext
 
     
     
-    public SolarWatchApiContext(DbContextOptions<SolarWatchApiContext> options) : base(options)
+    public SolarWatchApiContext() 
     {
         
     }

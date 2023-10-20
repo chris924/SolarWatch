@@ -25,9 +25,12 @@ public static class PrepDb
                     serviceScope.ServiceProvider.GetService<IdentityUsersContext>());
                 AddRoles(serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>());
                 AddAdmin(serviceScope.ServiceProvider.GetRequiredService<UserManager<IdentityUser>>());
+               
             }
             Console.WriteLine($"Environment is: {env.EnvironmentName},not running PrepDb... ");
            
+            
+            
         }
 
         static void SeedData(SolarWatchApiContext solarContext, IdentityUsersContext identityContext)
