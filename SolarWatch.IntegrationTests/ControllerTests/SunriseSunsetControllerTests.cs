@@ -1,4 +1,6 @@
 using System.Net;
+using System.Transactions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using Moq;
 using NUnit.Framework;
@@ -44,8 +46,6 @@ namespace SolarWatch.IntegrationTests.ControllerTests
         [Test]
         public async Task Get_ChecksIfCityInDb()
         {
-
-
             var newSetRiseTime = new SetRiseTime
             {
                 Sunrise = new TimeSpan(0),
@@ -84,19 +84,49 @@ namespace SolarWatch.IntegrationTests.ControllerTests
         [Test]
         public async Task Get_UploadsCityToDb_IfNotPresent()
         {
-            var beforeUpload = _factory.SolarRepository.GetByName("London");
+            var beforeRequest = _factory.SolarRepository.GetByName("London");
             
             var response = await _client.GetAsync("SunriseSunset/get-sunrise-sunset?city=London");
 
-           var afterUpload = _factory.SolarRepository.GetByName("London");
+           var afterRequest = _factory.SolarRepository.GetByName("London");
             
            Assert.Multiple(() => 
            {
-               Assert.That(beforeUpload, Is.EqualTo(null));
-               Assert.That(afterUpload.Name, Is.EqualTo("London"));
+               Assert.That(beforeRequest, Is.EqualTo(null));
+               Assert.That(afterRequest.Name, Is.EqualTo("London"));
            });
-            
+           
         }
+
+        [Test]
+        public async Task Get_ReturnsNotFound_IfCityNameIsInvalid()
+        {
+            var response = await _client.GetAsync("SunriseSunset/get-sunrise-sunset?city=,");
+
+            var afterRequest = _factory.SolarRepository.GetByName(",");
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+                Assert.That(afterRequest, Is.Null);
+            });
+        }
+
+        [Test]
+
+        public async Task Get_CityWithoutState_HasUnidentifiedState()
+        {
+            var response = await _client.GetAsync("SunriseSunset/get-sunrise-sunset?city=Budapest");
+
+            var afterRequest = _factory.SolarRepository.GetByName("Budapest");
+            
+            Assert.Multiple(() =>
+            {
+                Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.OK));
+                Assert.That(afterRequest.State, Is.EqualTo("Unidentified"));
+            });
+        }
+        
        
     }
 }

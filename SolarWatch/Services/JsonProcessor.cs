@@ -45,13 +45,12 @@ public class JsonProcessor : IJsonProcessor
 
         if (firstItem.TryGetProperty("name", out var nameProperty) &&
             firstItem.TryGetProperty("country", out var countryProperty) &&
-            firstItem.TryGetProperty("state", out var stateProperty) &&
             firstItem.TryGetProperty("lat", out var latProperty) &&
             firstItem.TryGetProperty("lon", out var lonProperty))
         {
             string name = nameProperty.GetString();
             string country = countryProperty.GetString();
-            string state = stateProperty.GetString();
+            string state = firstItem.TryGetProperty("state", out var stateProperty) ? stateProperty.GetString() : "Unidentified";
             double lat = latProperty.GetDouble();
             double lon = lonProperty.GetDouble();
 
