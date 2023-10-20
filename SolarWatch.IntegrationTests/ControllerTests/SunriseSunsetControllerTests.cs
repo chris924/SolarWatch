@@ -79,6 +79,24 @@ namespace SolarWatch.IntegrationTests.ControllerTests
             Assert.That(cityFromDb, Is.EqualTo(mockCity));
 
         }
+
+
+        [Test]
+        public async Task Get_UploadsCityToDb_IfNotPresent()
+        {
+            var beforeUpload = _factory.SolarRepository.GetByName("London");
+            
+            var response = await _client.GetAsync("SunriseSunset/get-sunrise-sunset?city=London");
+
+           var afterUpload = _factory.SolarRepository.GetByName("London");
+            
+           Assert.Multiple(() => 
+           {
+               Assert.That(beforeUpload, Is.EqualTo(null));
+               Assert.That(afterUpload.Name, Is.EqualTo("London"));
+           });
+            
+        }
        
     }
 }
